@@ -110,7 +110,7 @@ function List({ list }) {
   return (
     <ul>
       {list.map((item) => {
-        return <Item key={item.id} item={item} />;
+        return <Item key={item.id} {...item} />;
       })}
     </ul>
   );
