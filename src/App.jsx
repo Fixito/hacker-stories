@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { useState } from 'react';
 
-// On souhaite récupérer la valeur de l'input Search pour filtrer la liste des stories
+// Ce serait bien que notre app se souvienne de notre dernière recherche (pour l'UX)
+
 export function App1() {
   const stories = [
     {
@@ -20,23 +22,30 @@ export function App1() {
       points: 5,
     },
   ];
-  // On va remonter l'état de l'input Search dans le composant parent <App />
-  const [searchTerm, setSearchTerm] = useState('');
 
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem('search') || 'React'
+  );
+
+  const searchedStories = stories.filter((s) =>
+    s.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // La fonctionnalité fonctionne mais on a un souci. Il y a un side-effect dans notre handler. Si on utilise setSearchTerm ailleurs, on ne pourra pas garantir que le localStorage sera mis à jour. On peut utiliser un useEffect pour ça.
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
+    localStorage.setItem('search', e.target.value);
   };
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search searchTerm={searchTerm} onSearch={handleSearch} />
+      <Search search={searchTerm} onSearch={handleSearch} />
 
       <hr />
 
-      {/* TODO: Essayer de filtrer la liste avec le state `searchTerm` en utlisant la méthode filter() */}
-      <List list={stories} />
+      <List list={searchedStories} />
     </div>
   );
 }
@@ -60,9 +69,10 @@ export default function App() {
       points: 5,
     },
   ];
-  // Si on initialise la valeur, on constate que l'input de l'affiche pas
-  // Il faut que la valeur de l'input soit contrôlée par le state `searchTerm`
-  const [searchTerm, setSearchTerm] = useState('react');
+
+  const [searchTerm, setSearchTerm] = useState(
+    localStorage.getItem('search') ?? 'React'
+  );
 
   const searchedStories = stories.filter((s) =>
     s.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -71,6 +81,10 @@ export default function App() {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
+
+  useEffect(() => {
+    localStorage.setItem('search', searchTerm);
+  }, [searchTerm]);
 
   return (
     <div>
@@ -110,7 +124,7 @@ function List({ list }) {
   return (
     <ul>
       {list.map((item) => {
-        return <Item key={item.id} item={item} />;
+        return <Item key={item.id} {...item} />;
       })}
     </ul>
   );
