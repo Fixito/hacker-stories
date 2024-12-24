@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useEffect, useId, useReducer, useState } from 'react';
+import { useCallback, useEffect, useId, useReducer, useState } from 'react';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
@@ -59,6 +59,20 @@ export default function App() {
   const [stories, dispatchStories] = useReducer(reducer, initialState);
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
 
+  const handleFetchStories = useCallback(async () => {
+    dispatchStories({ type: STORIES_FETCH_INIT });
+
+    try {
+      const { data } = await axios(`${API_ENDPOINT}${searchTerm}`);
+      dispatchStories({
+        type: STORIES_FETCH_SUCCESS,
+        payload: data.hits,
+      });
+    } catch {
+      dispatchStories({ type: STORIES_FETCH_FAILURE });
+    }
+  }, [searchTerm]);
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -69,20 +83,8 @@ export default function App() {
 
   useEffect(() => {
     if (!searchTerm) return;
-
-    dispatchStories({ type: STORIES_FETCH_INIT });
-
-    axios(`${API_ENDPOINT}${searchTerm}`)
-      .then((result) => {
-        dispatchStories({
-          type: STORIES_FETCH_SUCCESS,
-          payload: result.data.hits,
-        });
-      })
-      .catch(() => {
-        dispatchStories({ type: STORIES_FETCH_FAILURE });
-      });
-  }, [searchTerm]);
+    handleFetchStories();
+  }, [handleFetchStories, searchTerm]);
 
   return (
     <div>
