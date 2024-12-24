@@ -58,12 +58,13 @@ const useStorageState = (key, initialState) => {
 export default function App() {
   const [stories, dispatchStories] = useReducer(reducer, initialState);
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
 
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: STORIES_FETCH_INIT });
 
     try {
-      const { data } = await axios(`${API_ENDPOINT}${searchTerm}`);
+      const { data } = await axios(url);
       dispatchStories({
         type: STORIES_FETCH_SUCCESS,
         payload: data.hits,
@@ -71,26 +72,34 @@ export default function App() {
     } catch {
       dispatchStories({ type: STORIES_FETCH_FAILURE });
     }
-  }, [searchTerm]);
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  }, [url]);
 
   const handleRemoveStory = (id) => {
     dispatchStories({ type: REMOVE_STORY, payload: id });
   };
 
+  const handleSearchInput = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
+  };
+
   useEffect(() => {
-    if (!searchTerm) return;
     handleFetchStories();
-  }, [handleFetchStories, searchTerm]);
+  }, [handleFetchStories]);
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <SearchForm
+        onSearchInput={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+        searchTerm={searchTerm}
+      />
 
       {stories.isError && <p>Something went wrong ...</p>}
 
@@ -105,26 +114,23 @@ export default function App() {
   );
 }
 
-function Search({ search, onSearch }) {
-  const handleChange = (e) => {
-    onSearch(e);
-  };
-
+function SearchForm({ searchTerm, onSearchInput, onSearchSubmit }) {
   return (
-    <div>
+    <form onSubmit={onSearchSubmit}>
       <InputWithLabel
         label='Search:'
         name='search'
         type='search'
         isFocused
-        value={search}
-        onInputChange={handleChange}
+        value={searchTerm}
+        onInputChange={onSearchInput}
       >
         <strong>Search: </strong>
       </InputWithLabel>
-
-      <p>Searching for {search}</p>
-    </div>
+      <button type='submit' disabled={!searchTerm}>
+        Search
+      </button>
+    </form>
   );
 }
 
