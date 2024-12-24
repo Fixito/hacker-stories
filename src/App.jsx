@@ -1,7 +1,49 @@
 import axios from 'axios';
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useEffect, useId, useReducer, useState } from 'react';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+
+const STORIES_FETCH_INIT = 'STORIES_FETCH_INIT';
+const STORIES_FETCH_SUCCESS = 'STORIES_FETCH_SUCCESS';
+const STORIES_FETCH_FAILURE = 'STORIES_FETCH_FAILURE';
+const REMOVE_STORY = 'REMOVE_STORY';
+
+const initialState = {
+  data: [],
+  isLoading: true,
+  isError: false,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case STORIES_FETCH_INIT:
+      return {
+        ...state,
+        isLoading: true,
+        isError: false,
+      };
+    case STORIES_FETCH_SUCCESS:
+      return {
+        ...state,
+        isLoading: false,
+        isError: false,
+        data: action.payload,
+      };
+    case STORIES_FETCH_FAILURE:
+      return {
+        ...state,
+        isLoading: false,
+        isError: true,
+      };
+    case REMOVE_STORY:
+      return {
+        ...state,
+        data: state.stories.filter((s) => s.id !== action.payload),
+      };
+    default:
+      throw new Error();
+  }
+}
 
 const useStorageState = (key, initialState) => {
   const [value, setValue] = useState(localStorage.getItem(key) || initialState);
@@ -14,40 +56,33 @@ const useStorageState = (key, initialState) => {
 };
 
 export default function App() {
-  const [stories, setStories] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const [stories, dispatchStories] = useReducer(reducer, initialState);
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
-
-  const searchedStories = stories.filter((s) =>
-    s.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const fetchStories = useCallback(async () => {
-    setIsLoading(true);
-
-    try {
-      const { data } = await axios(API_ENDPOINT + searchTerm);
-      setStories(data.hits);
-      setIsError(false);
-    } catch {
-      setIsError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [searchTerm]);
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
   };
 
   const handleRemoveStory = (id) => {
-    setStories(stories.filter((s) => s.id !== id));
+    dispatchStories({ type: REMOVE_STORY, payload: id });
   };
 
   useEffect(() => {
-    fetchStories();
-  }, [fetchStories]);
+    if (!searchTerm) return;
+
+    dispatchStories({ type: STORIES_FETCH_INIT });
+
+    axios(`${API_ENDPOINT}${searchTerm}`)
+      .then((result) => {
+        dispatchStories({
+          type: STORIES_FETCH_SUCCESS,
+          payload: result.data.hits,
+        });
+      })
+      .catch(() => {
+        dispatchStories({ type: STORIES_FETCH_FAILURE });
+      });
+  }, [searchTerm]);
 
   return (
     <div>
@@ -55,14 +90,14 @@ export default function App() {
 
       <Search search={searchTerm} onSearch={handleSearch} />
 
-      {isError && <p>Something went wrong ...</p>}
+      {stories.isError && <p>Something went wrong ...</p>}
 
       <hr />
 
-      {isLoading ? (
+      {stories.isLoading ? (
         <div>Loading...</div>
       ) : (
-        <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
       )}
     </div>
   );
