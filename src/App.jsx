@@ -22,7 +22,7 @@ export function App1() {
     <div>
       <h1>My Hacker Stories</h1>
 
-      {/* TODO: Extraire le label et l'input dans un composant <Search :> */}
+      {/* TODO: Extraire le label et l'input dans un composant <Search /> */}
       <label htmlFor='search'>Search: </label>
       <input type='search' name='search' id='search' />
 
@@ -82,7 +82,7 @@ export default function App() {
 
       <hr />
 
-      {/* Pour passe notre tableau dans le composant <List /> via une prop React */}
+      {/* On passe notre tableau dans le composant <List /> via une prop React */}
       <List list={stories} />
     </div>
   );
