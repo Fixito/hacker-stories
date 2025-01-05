@@ -38,7 +38,7 @@ function reducer(state, action) {
     case REMOVE_STORY:
       return {
         ...state,
-        data: state.stories.filter((s) => s.id !== action.payload),
+        data: state.data.filter((s) => s.objectID !== action.payload),
       };
     default:
       throw new Error();
