@@ -21,8 +21,8 @@ export function App2() {
       {/* Affiche une variable dans le JSX */}
       <h1>Hello {title}!</h1>
 
-      {/* TODO: Faire un <label /> et un <input /> pour un champs de recherche */}
-      {/* Certains attr sont différents en JSX car les noms sont réservés au JS */}
+      {/* TODO: Faire un label et un input pour un champs de recherche */}
+      {/* Certains attributs sont différents en JSX car les noms sont réservés au JS */}
       <label htmlFor='search'>Search: </label>
       <input type='search' name='search' id='search' />
     </div>
@@ -90,7 +90,7 @@ export default function App() {
           const { id, title, author, num_comments, points, url } = item;
 
           //! On a un warning dans la console du dev tools
-          // Chaque élément doit avoir une prop key unique
+          // Chaque élément doit avoir une prop `key` unique
           return (
             <li key={id}>
               <a href={url} target='_blank'>
