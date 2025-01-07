@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import axios from 'axios';
 
-import Search from './components/Search.jsx';
+import SearchForm from './components/SearchForm.jsx';
 import List from './components/List.jsx';
 
 import { useStorageState } from './hooks/useStorageState.js';
 import {
+  initialState,
   REMOVE_STORY,
   STORIES_FETCH_FAILURE,
   STORIES_FETCH_INIT,
@@ -16,21 +17,16 @@ import {
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
-const initialState = {
-  data: [],
-  isLoading: true,
-  isError: false,
-};
-
 export default function App() {
   const [stories, dispatchStories] = useReducer(storiesReducer, initialState);
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
+  const [url, setUrl] = useState(`${API_ENDPOINT}${searchTerm}`);
 
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: STORIES_FETCH_INIT });
 
     try {
-      const { data } = await axios(`${API_ENDPOINT}${searchTerm}`);
+      const { data } = await axios(url);
       dispatchStories({
         type: STORIES_FETCH_SUCCESS,
         payload: data.hits,
@@ -38,10 +34,16 @@ export default function App() {
     } catch {
       dispatchStories({ type: STORIES_FETCH_FAILURE });
     }
-  }, [searchTerm]);
+  }, [url]);
 
-  const handleSearch = (e) => {
+  const handleSearchInput = (e) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    if (!searchTerm) return;
+    setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
   const handleRemoveStory = (id) => {
@@ -49,15 +51,18 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!searchTerm) return;
     handleFetchStories();
-  }, [handleFetchStories, searchTerm]);
+  }, [handleFetchStories]);
 
   return (
     <div>
       <h1>My Hacker Stories</h1>
 
-      <Search search={searchTerm} onSearch={handleSearch} />
+      <SearchForm
+        searchTerm={searchTerm}
+        onInputChange={handleSearchInput}
+        onSearchSubmit={handleSearchSubmit}
+      />
 
       {stories.isError && <p>Something went wrong ...</p>}
 

@@ -1,24 +1,25 @@
 import InputWithLabel from './InputWithLabel.jsx';
 
-export default function Search({ search, onSearch }) {
+export default function Search({ searchTerm, onInputChange, onSearchSubmit }) {
   const handleChange = (e) => {
-    onSearch(e);
+    onInputChange(e);
   };
 
   return (
-    <div>
+    <form onSubmit={onSearchSubmit}>
       <InputWithLabel
         label='Search:'
         name='search'
         type='search'
         isFocused
-        value={search}
+        value={searchTerm}
         onInputChange={handleChange}
       >
         <strong>Search: </strong>
       </InputWithLabel>
-
-      <p>Searching for {search}</p>
-    </div>
+      <button type='submit' disabled={!searchTerm}>
+        Search
+      </button>
+    </form>
   );
 }

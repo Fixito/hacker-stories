@@ -3,6 +3,12 @@ export const STORIES_FETCH_SUCCESS = 'STORIES_FETCH_SUCCESS';
 export const STORIES_FETCH_FAILURE = 'STORIES_FETCH_FAILURE';
 export const REMOVE_STORY = 'REMOVE_STORY';
 
+export const initialState = {
+  data: [],
+  isLoading: true,
+  isError: false,
+};
+
 export function storiesReducer(state, action) {
   switch (action.type) {
     case STORIES_FETCH_INIT:
