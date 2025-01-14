@@ -11,3 +11,8 @@ body {
 button {
   cursor: pointer;
 }
+
+th {
+  text-align: start;
+  cursor: pointer;
+}
