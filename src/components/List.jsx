@@ -1,4 +1,6 @@
-export default function List({ list, onRemoveItem }) {
+import React from 'react';
+
+function List({ list, onRemoveItem }) {
   return (
     <ul>
       {list.map((item) => {
@@ -9,6 +11,8 @@ export default function List({ list, onRemoveItem }) {
     </ul>
   );
 }
+
+export default React.memo(List);
 
 function Item({
   objectID,

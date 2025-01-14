@@ -6,6 +6,7 @@ import SearchForm from './components/SearchForm.jsx';
 import List from './components/List.jsx';
 
 import { useStorageState } from './hooks/useStorageState.js';
+
 import {
   initialState,
   REMOVE_STORY,
@@ -46,9 +47,9 @@ export default function App() {
     setUrl(`${API_ENDPOINT}${searchTerm}`);
   };
 
-  const handleRemoveStory = (id) => {
+  const handleRemoveStory = useCallback((id) => {
     dispatchStories({ type: REMOVE_STORY, payload: id });
-  };
+  }, []);
 
   useEffect(() => {
     handleFetchStories();
