@@ -1,5 +1,6 @@
-import axios from 'axios';
 import { useCallback, useEffect, useId, useState } from 'react';
+
+import axios from 'axios';
 
 const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
 
