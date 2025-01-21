@@ -20,6 +20,10 @@ function List({ list, onRemoveItem }) {
   const sortFunction = SORTS[sort];
   const sortedList = sortFunction(list);
 
+  if (!list.length) {
+    return <h2>No result founds</h2>;
+  }
+
   return (
     <table>
       <thead>
