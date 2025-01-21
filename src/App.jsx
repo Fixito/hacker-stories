@@ -6,6 +6,7 @@ import Search from './components/Search.jsx';
 import List from './components/List.jsx';
 
 import { useStorageState } from './hooks/useStorageState.js';
+
 import {
   REMOVE_STORY,
   STORIES_FETCH_FAILURE,
@@ -59,15 +60,15 @@ export default function App() {
 
       <Search search={searchTerm} onSearch={handleSearch} />
 
-      {stories.isError && <p>Something went wrong ...</p>}
-
       <hr />
+
+      {stories.isError && <h2>Something went wrong. Try again later.</h2>}
 
       {stories.isLoading ? (
         <div>Loading...</div>
-      ) : (
+      ) : !stories.isError ? (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
-      )}
+      ) : null}
     </div>
   );
 }
