@@ -46,7 +46,11 @@ export function App1() {
 
       <hr />
 
-      <List list={searchedStories} />
+      {searchedStories.length > 0 ? (
+        <List list={searchedStories} />
+      ) : (
+        <h2>No story matched your search</h2>
+      )}
     </div>
   );
 }
@@ -95,7 +99,11 @@ export default function App() {
 
       <hr />
 
-      <List list={searchedStories} />
+      {searchedStories.length > 0 ? (
+        <List list={searchedStories} />
+      ) : (
+        <h2>No story matched your search</h2>
+      )}
     </div>
   );
 }
