@@ -1,4 +1,5 @@
 import { useEffect, useReducer, useState } from 'react';
+
 import axios from 'axios';
 
 import List from './components/List.jsx';
@@ -44,7 +45,7 @@ function storiesReducer(state, action) {
         data: state.stories.filter((s) => s.id !== action.payload),
       };
     default:
-      throw new Error();
+      throw new Error(`Unsupported action type: ${action.type}`);
   }
 }
 
@@ -93,15 +94,15 @@ export default function App() {
 
       <Search search={searchTerm} onSearch={handleSearch} />
 
-      {stories.isError && <p>Something went wrong ...</p>}
-
       <hr />
+
+      {stories.isError && <h2>Something went wrong. Try again later.</h2>}
 
       {stories.isLoading ? (
         <div>Loading...</div>
-      ) : (
+      ) : !stories.isError ? (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
-      )}
+      ) : null}
     </div>
   );
 }
