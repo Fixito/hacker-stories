@@ -1,4 +1,8 @@
 export default function List({ list, onRemoveItem }) {
+  if (!list.length) {
+    return <h2>No result founds</h2>;
+  }
+
   return (
     <ul>
       {list.map((item) => {

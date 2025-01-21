@@ -2,10 +2,11 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import axios from 'axios';
 
-import SearchForm from './components/SearchForm.jsx';
 import List from './components/List.jsx';
+import SearchForm from './components/SearchForm.jsx';
 
 import { useStorageState } from './hooks/useStorageState.js';
+
 import {
   initialState,
   REMOVE_STORY,
@@ -64,15 +65,15 @@ export default function App() {
         onSearchSubmit={handleSearchSubmit}
       />
 
-      {stories.isError && <p>Something went wrong ...</p>}
-
       <hr />
+
+      {stories.isError && <h2>Something went wrong. Try again</h2>}
 
       {stories.isLoading ? (
         <div>Loading...</div>
-      ) : (
+      ) : !stories.isError ? (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
-      )}
+      ) : null}
     </div>
   );
 }
