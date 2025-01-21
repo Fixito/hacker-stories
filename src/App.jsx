@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // Ce serait bien que notre app se souvienne de notre dernière recherche (pour l'UX)
 
@@ -31,7 +30,9 @@ export function App1() {
     s.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // La fonctionnalité fonctionne mais on a un souci. Il y a un side-effect dans notre handler. Si on utilise setSearchTerm ailleurs, on ne pourra pas garantir que le localStorage sera mis à jour. On peut utiliser un useEffect pour ça.
+  //! La fonctionnalité fonctionne mais on a un souci. Il y a un side-effect dans notre handler. Si on utilise setSearchTerm ailleurs, on ne pourra pas garantir que le localStorage sera mis à jour.
+  // On peut utiliser un useEffect pour ça.
+
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     localStorage.setItem('search', e.target.value);
