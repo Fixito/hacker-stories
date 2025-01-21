@@ -62,8 +62,10 @@ export default function App() {
 
       {isLoading ? (
         <div>Loading...</div>
-      ) : (
+      ) : searchedStories.length > 0 ? (
         <List list={searchedStories} onRemoveItem={handleRemoveStory} />
+      ) : (
+        <h2>No story matched your search</h2>
       )}
     </div>
   );
