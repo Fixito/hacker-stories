@@ -19,3 +19,7 @@ th {
 th:not(:last-child) {
   cursor: pointer;
 }
+
+th.active {
+  color: green;
+}

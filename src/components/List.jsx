@@ -1,6 +1,7 @@
 import { memo, useState } from 'react';
 
 import { sortBy } from 'lodash';
+import TableHeader from './TableHeader.jsx';
 
 const SORTS = {
   NONE: (list) => list,
@@ -28,10 +29,26 @@ function List({ list, onRemoveItem }) {
     <table>
       <thead>
         <tr>
-          <th onClick={() => handleSort('TITLE')}>Title</th>
-          <th onClick={() => handleSort('AUTHOR')}>Author</th>
-          <th onClick={() => handleSort('COMMENT')}>Comments</th>
-          <th onClick={() => handleSort('POINT')}>Points</th>
+          <TableHeader
+            header='Titles'
+            isActive={sort === 'TITLE'}
+            onClick={() => handleSort('TITLE')}
+          />
+          <TableHeader
+            header='Authors'
+            isActive={sort === 'AUTHOR'}
+            onClick={() => handleSort('AUTHOR')}
+          />
+          <TableHeader
+            header='Comments'
+            isActive={sort === 'COMMENT'}
+            onClick={() => handleSort('COMMENT')}
+          />
+          <TableHeader
+            header='Points'
+            isActive={sort === 'POINT'}
+            onClick={() => handleSort('POINT')}
+          />
           <th>Actions</th>
         </tr>
       </thead>
