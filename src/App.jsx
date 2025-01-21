@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import axios from 'axios';
 
+import LastSearches from './components/LastSearches.jsx';
 import List from './components/List.jsx';
 import SearchForm from './components/SearchForm.jsx';
 
@@ -15,12 +16,16 @@ import {
   STORIES_FETCH_SUCCESS,
   storiesReducer,
 } from './storiesReducer.js';
-import LastSearches from './components/LastSearches.jsx';
 
-const API_ENDPOINT = 'https://hn.algolia.com/api/v1/search?query=';
+const API_BASE = 'https://hn.algolia.com/api/v1';
+const API_SEARCH = '/search';
+const PARAM_SEARCH = 'query=';
+const PARAM_PAGE = 'page=';
 
 function extractSearchTerm(url) {
-  return url.replace(API_ENDPOINT, '');
+  return url
+    .substring(url.lastIndexOf('?') + 1, url.lastIndexOf('&'))
+    .replace(PARAM_SEARCH, '');
 }
 
 function getLastSearches(urls) {
@@ -44,19 +49,20 @@ function getLastSearches(urls) {
         }, [])
         .slice(-6)
         .slice(0, -1)
-        .map((url) => extractSearchTerm(url))
     ),
   ];
 }
 
-function getUrl(searchTerm) {
-  return `${API_ENDPOINT}${searchTerm}`;
+function getUrl(searchTerm, page) {
+  return `${API_BASE}${API_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`;
 }
 
 export default function App() {
   const [stories, dispatchStories] = useReducer(storiesReducer, initialState);
   const [searchTerm, setSearchTerm] = useStorageState('search', 'React');
-  const [urls, setUrls] = useState([getUrl(searchTerm)]);
+  const [urls, setUrls] = useState([getUrl(searchTerm, 0)]);
+
+  const lastSearches = getLastSearches(urls);
 
   const handleFetchStories = useCallback(async () => {
     dispatchStories({ type: STORIES_FETCH_INIT });
@@ -66,7 +72,10 @@ export default function App() {
       const { data } = await axios(lastUrl);
       dispatchStories({
         type: STORIES_FETCH_SUCCESS,
-        payload: data.hits,
+        payload: {
+          list: data.hits,
+          page: data.page,
+        },
       });
     } catch {
       dispatchStories({ type: STORIES_FETCH_FAILURE });
@@ -77,22 +86,26 @@ export default function App() {
     setSearchTerm(e.target.value);
   };
 
-  const handleSearch = (searchTerm) => {
-    const url = getUrl(searchTerm);
+  const handleSearch = (searchTerm, page) => {
+    const url = getUrl(searchTerm, page);
     setUrls([...urls, url]);
   };
 
   const handleLastSearch = (searchTerm) => {
     setSearchTerm(searchTerm);
-    handleSearch(searchTerm);
+    handleSearch(searchTerm, 0);
   };
 
-  const lastSearches = getLastSearches(urls);
+  const handleMore = () => {
+    const lastUrl = urls.at(-1);
+    const searchTerm = extractSearchTerm(lastUrl);
+    handleSearch(searchTerm, stories.page + 1);
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (!searchTerm) return;
-    handleSearch(searchTerm);
+    handleSearch(searchTerm, 0);
   };
 
   const handleRemoveStory = useCallback((id) => {
@@ -122,13 +135,17 @@ export default function App() {
 
       <hr />
 
+      {stories.data.length > 0 && (
+        <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      )}
+
       {stories.isLoading ? (
         <div>Loading...</div>
       ) : stories.data.length > 0 ? (
-        <List list={stories.data} onRemoveItem={handleRemoveStory} />
-      ) : (
+        <button onClick={handleMore}>More</button>
+      ) : !stories.isError ? (
         <h2>No story matched your search</h2>
-      )}
+      ) : null}
     </div>
   );
 }
