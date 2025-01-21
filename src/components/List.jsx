@@ -2,6 +2,8 @@ import { memo, useState } from 'react';
 
 import { sortBy } from 'lodash';
 
+import TableHeader from './TableHeader.jsx';
+
 const SORTS = {
   NONE: (list) => list,
   TITLE: (list) => sortBy(list, 'title'),
@@ -11,7 +13,10 @@ const SORTS = {
 };
 
 function List({ list, onRemoveItem }) {
-  const [sort, setSort] = useState({ sortKey: 'NONE', isReverse: false });
+  const [sort, setSort] = useState({
+    sortKey: 'NONE',
+    isReverse: false,
+  });
 
   const handleSort = (sortKey) => {
     const isReverse = sort.sortKey === sortKey && !sort.isReverse;
@@ -27,10 +32,30 @@ function List({ list, onRemoveItem }) {
     <table>
       <thead>
         <tr>
-          <th onClick={() => handleSort('TITLE')}>Title</th>
-          <th onClick={() => handleSort('AUTHOR')}>Author</th>
-          <th onClick={() => handleSort('COMMENT')}>Comments</th>
-          <th onClick={() => handleSort('POINT')}>Points</th>
+          <TableHeader
+            header='Title'
+            onClick={() => handleSort('TITLE')}
+            isActive={sort.sortKey === 'TITLE'}
+            isReverse={sort.sortKey === 'TITLE' && !sort.isReverse}
+          />
+          <TableHeader
+            header='Author'
+            onClick={() => handleSort('AUTHOR')}
+            isActive={sort.sortKey === 'AUTHOR'}
+            isReverse={sort.sortKey === 'AUTHOR' && !sort.isReverse}
+          />
+          <TableHeader
+            header='Comments'
+            onClick={() => handleSort('COMMENT')}
+            isActive={sort.sortKey === 'COMMENT'}
+            isReverse={sort.sortKey === 'COMMENT' && sort.isReverse}
+          />
+          <TableHeader
+            header='Points'
+            onClick={() => handleSort('POINT')}
+            isActive={sort.sortKey === 'POINT'}
+            isReverse={sort.sortKey === 'POINT' && sort.isReverse}
+          />
           <th>Actions</th>
         </tr>
       </thead>
