@@ -24,26 +24,29 @@ function extractSearchTerm(url) {
 }
 
 function getLastSearches(urls) {
-  return urls
-    .reduce((result, url, index) => {
-      const searchTerm = extractSearchTerm(url);
+  return [
+    ...new Set(
+      urls
+        .reduce((result, url, index) => {
+          const searchTerm = extractSearchTerm(url);
 
-      if (index === 0) {
-        return [...result, searchTerm];
-      }
+          if (index === 0) {
+            return [...result, searchTerm];
+          }
 
-      const previousSearchTerm = result.at(-1);
+          const previousSearchTerm = result.at(-1);
 
-      if (searchTerm === previousSearchTerm) {
-        return result;
-      } else {
-        return [...result, searchTerm];
-      }
-    }, [])
-
-    .slice(-6)
-    .slice(0, -1)
-    .map((url) => extractSearchTerm(url));
+          if (searchTerm === previousSearchTerm) {
+            return result;
+          } else {
+            return [...result, searchTerm];
+          }
+        }, [])
+        .slice(-6)
+        .slice(0, -1)
+        .map((url) => extractSearchTerm(url))
+    ),
+  ];
 }
 
 function getUrl(searchTerm) {
@@ -121,8 +124,10 @@ export default function App() {
 
       {stories.isLoading ? (
         <div>Loading...</div>
-      ) : (
+      ) : stories.data.length > 0 ? (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
+      ) : (
+        <h2>No story matched your search</h2>
       )}
     </div>
   );
