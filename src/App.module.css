@@ -1,0 +1,69 @@
+.container {
+  min-height: 100dvh;
+  padding: 1.25rem;
+  background: #83a4d4;
+  background: linear-gradient(to left, #b6fbff, #83a4d4);
+  color: #171212;
+}
+
+.headlinePrimary {
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+table {
+  inline-size: 100%;
+}
+
+th {
+  text-align: start;
+}
+
+th:not(:last-child) {
+  cursor: pointer;
+}
+
+th.active {
+  color: green;
+}
+
+tbody td {
+  padding-block: 0.25rem;
+}
+
+.button {
+  background: transparent;
+  border: 1px solid #171212;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: all 0.1s ease-in;
+
+  &:hover {
+    background: #171212;
+    color: #fff;
+  }
+}
+
+.buttonLarge {
+  padding: 0.5rem;
+}
+
+.searchForm {
+  margin-block-end: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.label {
+  border-top: 1px solid #171212;
+  border-left: 1px solid #171212;
+  padding-inline: 0.25rem;
+}
+
+.input {
+  border: none;
+  background-color: transparent;
+  font-size: 1.25rem;
+}

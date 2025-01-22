@@ -2,6 +2,8 @@ import { memo, useState } from 'react';
 
 import { sortBy } from 'lodash';
 
+import styles from '../App.module.css';
+
 import TableHeader from './TableHeader.jsx';
 
 const SORTS = {
@@ -92,7 +94,12 @@ function Item({
       <td>{num_comments}</td>
       <td>{points}</td>
       <td>
-        <button onClick={() => onRemoveItem(objectID)}>Delete</button>
+        <button
+          onClick={() => onRemoveItem(objectID)}
+          className={styles.button}
+        >
+          Delete
+        </button>
       </td>
     </tr>
   );

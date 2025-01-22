@@ -1,12 +1,14 @@
 import InputWithLabel from './InputWithLabel.jsx';
 
+import styles from '../App.module.css';
+
 export default function Search({ searchTerm, onInputChange, onSearchSubmit }) {
   const handleChange = (e) => {
     onInputChange(e);
   };
 
   return (
-    <form onSubmit={onSearchSubmit}>
+    <form onSubmit={onSearchSubmit} className={styles.searchForm}>
       <InputWithLabel
         label='Search:'
         name='search'
@@ -17,7 +19,7 @@ export default function Search({ searchTerm, onInputChange, onSearchSubmit }) {
       >
         <strong>Search: </strong>
       </InputWithLabel>
-      <button type='submit' disabled={!searchTerm}>
+      <button type='submit' className={styles.button} disabled={!searchTerm}>
         Search
       </button>
     </form>

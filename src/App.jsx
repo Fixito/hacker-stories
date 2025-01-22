@@ -2,6 +2,8 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 
 import axios from 'axios';
 
+import styles from './App.module.css';
+
 import LastSearches from './components/LastSearches.jsx';
 import List from './components/List.jsx';
 import SearchForm from './components/SearchForm.jsx';
@@ -117,8 +119,8 @@ export default function App() {
   }, [handleFetchStories]);
 
   return (
-    <div>
-      <h1>My Hacker Stories</h1>
+    <main className={styles.container}>
+      <h1 className={styles.headlinePrimary}>My Hacker Stories</h1>
 
       <SearchForm
         searchTerm={searchTerm}
@@ -133,7 +135,7 @@ export default function App() {
 
       {stories.isError && <p>Something went wrong ...</p>}
 
-      <hr />
+      {/* <hr /> */}
 
       {stories.data.length > 0 && (
         <List list={stories.data} onRemoveItem={handleRemoveStory} />
@@ -142,10 +144,12 @@ export default function App() {
       {stories.isLoading ? (
         <div>Loading...</div>
       ) : stories.data.length > 0 ? (
-        <button onClick={handleMore}>More</button>
+        <button onClick={handleMore} className={styles.button}>
+          More
+        </button>
       ) : !stories.isError ? (
         <h2>No story matched your search</h2>
       ) : null}
-    </div>
+    </main>
   );
 }
